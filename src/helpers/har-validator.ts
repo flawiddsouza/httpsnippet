@@ -1,6 +1,6 @@
-import Ajv, { ErrorObject } from 'ajv';
+import { ErrorObject } from 'ajv';
 import { Request } from 'har-format';
-import * as schema from 'har-schema';
+import harSchemaValidator from './har-schema-validator';
 
 export class HARError extends Error {
   name = 'HARError';
@@ -13,16 +13,8 @@ export class HARError extends Error {
   }
 }
 
-const ajv = new Ajv({
-  allErrors: true,
-});
-ajv.addSchema(schema);
-
 export const validateHarRequest = (request: any): request is Request => {
-  const validate = ajv.getSchema('request.json');
-  if (!validate) {
-    throw new Error('failed to find HAR request schema');
-  }
+  const validate: any = harSchemaValidator;
   const valid = validate(request);
   if (!valid && validate.errors) {
     throw new HARError(validate.errors);
